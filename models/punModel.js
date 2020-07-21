@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const punSchema = new Schema({
   content: { type: String, required: true },
-  creator: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
+  userId: { type: String, required: true },
 });
 
-module.exports = mongoose.model('Pun', articleSchema);
+module.exports = mongoose.model('Pun', punSchema);

@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 
-const usersControllers = require('../controllers/userControllers');
+const userControllers = require('../controllers/userControllers');
 
-router.get('/', auth, usersControllers.getUser);
+router.get('/', auth, userControllers.getUser);
 
-router.post('/register', usersControllers.register);
+router.post('/register', userControllers.register);
 
-router.post('/login', usersControllers.login);
+router.post('/login', userControllers.login);
 
-router.post('/tokenIsValid', usersControllers.tokenIsValid);
+router.post('/tokenIsValid', userControllers.tokenIsValid);
 
 module.exports = router;
