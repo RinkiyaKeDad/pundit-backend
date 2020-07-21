@@ -1,23 +1,13 @@
-const HttpError = require('../models/http-error');
-const User = require('../models/user');
+const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
-const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 
-const getUsers = async (req, res, next) => {
-  //conscept of protection we add an empty js object and then -pass tells to not give us the pass also.
-  //just email and user name
-  let users;
-  try {
-    users = await User.find({}, '-password');
-  } catch (err) {
-    const error = new HttpError(
-      'Fetching users failed, please try again later.',
-      500
-    );
-    return next(error);
-  }
-  res.json({ users: users.map(user => user.toObject({ getters: true })) });
+const getUser = async (req, res) => {
+  const user = await User.findById(req.user);
+  res.json({
+    displayName: user.displayName,
+    id: user._id,
+  });
 };
 
 const register = async (req, res) => {
@@ -64,7 +54,6 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // validate
     if (!email || !password)
       return res.status(400).json({ msg: 'Not all fields have been entered.' });
 
@@ -89,6 +78,25 @@ const login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-exports.getUsers = getUsers;
-exports.signup = signup;
+
+const tokenIsValid = async (req, res) => {
+  try {
+    const token = req.header('x-auth-token');
+    if (!token) return res.json(false);
+
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified) return res.json(false);
+
+    const user = await User.findById(verified.id);
+    if (!user) return res.json(false);
+
+    return res.json(true);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getUser = getUser;
+exports.register = register;
 exports.login = login;
+exports.tokenIsValid = tokenIsValid;
