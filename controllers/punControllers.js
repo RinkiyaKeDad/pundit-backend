@@ -1,4 +1,5 @@
 const Pun = require('../models/punModel');
+const User = require('../models/userModel');
 
 const getPuns = async (req, res) => {
   const puns = await Pun.find({});
@@ -10,10 +11,12 @@ const createPun = async (req, res) => {
     let { content } = req.body;
     if (!content)
       return res.status(400).json({ msg: 'Not all fields have been entered.' });
+    const user = await User.findById(req.user);
 
     const newPun = new Pun({
       content,
       userId: req.user,
+      userName: user.displayName,
     });
 
     const savedPun = await newPun.save();
