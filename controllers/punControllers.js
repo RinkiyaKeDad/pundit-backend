@@ -10,7 +10,7 @@ const createPun = async (req, res) => {
   try {
     let { content } = req.body;
     if (!content)
-      return res.status(400).json({ msg: 'Not all fields have been entered.' });
+      return res.status(400).json({ msg: 'Please fill all fields.' });
     const user = await User.findById(req.user);
 
     const newPun = new Pun({
